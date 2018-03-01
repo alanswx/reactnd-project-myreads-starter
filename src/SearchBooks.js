@@ -26,33 +26,31 @@ updateQuery = (query)=> {
     this.setState({query:query})
     BooksAPI.search(query).then((searchResults) =>  {
 
-  //    if (searchResults.error) console.log(searchResults.error)
 
     if (searchResults instanceof Array) {
-      if (searchResults && searchResults.error && searchResults.error.length) {
-        console.log(searchResults.error)
-        this.setState({error:searchResults.error})
-        this.setState({searchResults:[]})
-
-      }
-      else {
-          // Go through the searchResults and if a book is in the "book" list, set the book.shelf correctly,
-          // otherwise set it to None
-          searchResults.map((book)=> { var foundbook=this.props.books.find( x=> x.id === book.id); foundbook? book.shelf=foundbook.shelf:book.shelf='none'})
-          this.setState({searchResults:searchResults})
-      }
+      // Go through the searchResults and if a book is in the "book" list, set the book.shelf correctly,
+      // otherwise set it to None
+      searchResults = searchResults.map((book)=> { var foundbook=this.props.books.find( x=> x.id === book.id); foundbook? book.shelf=foundbook.shelf:book.shelf='none'; return book})
+      this.setState({error:''})
+      this.setState({searchResults:searchResults})
     }
     else {
+      console.log(searchResults)
+      if (searchResults && searchResults.error)
+        this.setState({error:searchResults.error})
       this.setState({searchResults:[]})
-
     }
     })
   }
 
-    console.log(this.state)
-    //if (this.props.onSearchBooks)
-  //    this.props.onSearchBooks(values)
   }
+
+  componentWillReceiveProps (nextProps) {
+    var searchResults = this.state.searchResults
+    searchResults = searchResults.map((book)=> { var foundbook=nextProps.books.find( x=> x.id === book.id); foundbook? book.shelf=foundbook.shelf:book.shelf='none'; return book})
+    this.setState({searchResults:searchResults})
+  }
+
 
   render() {
     return (
@@ -77,19 +75,19 @@ updateQuery = (query)=> {
         />
     </div>
   </div>
-  {this.state.error.length>0  && (
-    <div >
-    <span>Error: {this.state.error} </span>
-    </div>
-  )}
   <div className="search-books-results">
   <div>
   <div className="list-books">
     <div className="list-books-title">
-      <h1>MyReads</h1>
+      <h1>Search Results</h1>
     </div>
 
     <div className="list-books-content">
+    {this.state.error.length>0  && (
+      <div>
+      <span>Error: {this.state.error} </span>
+      </div>
+    )}
     <BookShelf
       books={this.state.searchResults}
       bookkey={'none'}
