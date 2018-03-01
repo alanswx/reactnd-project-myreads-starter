@@ -20,15 +20,10 @@ class BooksApp extends React.Component {
   // This method fires off the AJAX call, and updates our state with the book list from the server
   getAllBooks(){
     BooksAPI.getAll().then((books)=>{this.setState({books})})
-    console.log(this.state)
   }
 
   // This method updates the book onto a new shelf
   updateBookShelf(book,shelf){
-    console.log("update book shelf")
-    console.log(book)
-    console.log(book.id)
-    console.log(shelf)
     var that = this
     BooksAPI.update(book,shelf).then((result) => {
       that.getAllBooks()
